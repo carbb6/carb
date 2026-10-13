@@ -1,0 +1,6 @@
+name = "carbonpath-2050-gratis"
+compatibility_date = "2026-10-13"
+pages_build_output_dir = "."
+
+[ai]
+binding = "AI"

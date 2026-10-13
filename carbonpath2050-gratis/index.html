@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarbonPath 2050 · CpB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A1C1A; --deep:#102B27; --paper:#E4E9E6; --panel:#F7F9F8;
+  --line:#C5D0CC; --line-soft:#DDE4E1; --muted:#5B6E69;
+  --green:#0E8F6E; --green-dk:#0A6B53; --green-tint:#E8F2EE;
+  --comb:#2F5F58; --flare:#E2591B; --vent:#6E8FA6; --fug:#B58A1E;
+  --alert:#B5352D; --gold:#D9B45B;
+  --r:3px; --maxw:1360px; --pad:clamp(16px,3vw,28px);
+  --s1:6px; --s2:10px; --s3:16px; --s4:22px; --s5:30px;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.015em;line-height:1.2}
+p{margin:0 0 .7em} p:last-child{margin-bottom:0}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
+
+/* ---------- assinatura ---------- */
+.sig{
+  font-family:var(--mono);font-weight:600;letter-spacing:.06em;
+  border:1px solid currentColor;border-radius:2px;padding:2px 7px;font-size:12px;
+}
+.sigfoot{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--line)}
+.sigfoot .sig{color:var(--deep)}
+.sigfoot span{font-size:12.5px;color:var(--muted)}
+
+/* ---------- cabeçalho ---------- */
+header{background:var(--ink);color:#DCE6E2}
+.bar{display:flex;align-items:center;gap:var(--s3) var(--s4);flex-wrap:wrap;padding-block:var(--s3);border-bottom:1px solid #1E3E38}
+.bar h1{font-size:22px;color:#fff;flex:0 0 auto;display:flex;align-items:center;gap:var(--s2)}
+.bar h1 em{font-style:normal;color:var(--green);font-weight:400}
+.bar h1 .sig{color:#5D7B74;font-size:11px}
+.bar .tag{font-size:13.5px;color:#8CA29D;flex:1 1 300px;max-width:58ch;line-height:1.45}
+.bar .acts{display:flex;gap:var(--s2);flex:0 0 auto}
+.linkbtn{background:transparent;border:1px solid #2A4E47;color:#BFD2CD;padding:7px 13px;border-radius:2px;font-size:13px}
+.linkbtn:hover{background:#16332E;color:#fff}
+
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:var(--s5);padding-block:var(--s4) var(--s5)}
+.hero-chart{min-width:0;display:flex;flex-direction:column;gap:var(--s2)}
+.hero-read{border-left:1px solid #1E3E38;padding-left:var(--s4);display:flex;flex-direction:column;justify-content:center}
+.hero-read .big{font-family:var(--mono);font-size:clamp(34px,4vw,46px);line-height:1;color:#fff;font-weight:500}
+.hero-read .big small{display:block;font-size:13.5px;color:#8CA29D;font-weight:400;margin-top:var(--s1);font-family:var(--sans)}
+.hero-read .lede{font-size:13.5px;color:#9FB3AE;margin-top:var(--s3);line-height:1.5}
+.gapbar{height:8px;background:#1E3E38;border-radius:2px;margin-block:var(--s3) var(--s1);overflow:hidden}
+.gapbar i{display:block;height:100%;background:var(--green)}
+.gapbar.miss i{background:var(--flare)}
+.hero-read dl{display:grid;grid-template-columns:1fr auto;gap:var(--s1) var(--s3);margin:var(--s3) 0 0;font-size:13px;align-items:baseline}
+.hero-read dt{color:#8CA29D}
+.hero-read dd{margin:0;font-family:var(--mono);color:#E4EDEA;text-align:right}
+
+/* ---------- controles de gráfico ---------- */
+.ctrls{display:flex;gap:var(--s2) var(--s3);flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{
+  background:transparent;border:1px solid #2A4E47;color:#9FB3AE;
+  padding:4px 10px;border-radius:14px;font-size:12px;font-family:var(--mono);
+}
+.chip:hover{border-color:var(--green);color:#DCE6E2}
+.chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#04231C;font-weight:500}
+.chip.light{border-color:var(--line);color:var(--muted);background:#fff}
+.chip.light:hover{border-color:var(--green-dk);color:var(--green-dk)}
+.chip.light[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:#fff}
+.ctrls .lab{font-size:11.5px;color:#7E958F}
+.lightbar{background:#F1F4F3;border-bottom:1px solid var(--line-soft);padding:var(--s2) var(--s3);display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+.lightbar .lab{color:var(--muted)}
+
+/* ---------- grade ---------- */
+main{display:grid;grid-template-columns:396px minmax(0,1fr);gap:var(--s4);align-items:start;padding-block:var(--s4) 72px}
+.rail{display:flex;flex-direction:column;gap:var(--s4);align-self:start;position:sticky;top:var(--s4)}
+@media (max-height:760px){.rail{position:static}}
+.col{display:flex;flex-direction:column;gap:var(--s4);min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.card > h2{font-size:13px;font-weight:600;padding:12px var(--s3);border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;gap:var(--s2)}
+.card > h2 b{font-family:var(--mono);font-weight:500;color:var(--muted);font-size:12px;text-align:right}
+.card .body{padding:var(--s3)}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+/* ---------- formulário ---------- */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px;line-height:1.3;min-height:1.3em}
+input[type=number],input[type=text],select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:2px;background:#fff;font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+select{font-family:var(--sans)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+fieldset{border:0;border-top:1px solid var(--line-soft);margin:var(--s3) 0 0;padding:var(--s3) 0 0}
+legend{font-size:12px;color:var(--muted);padding:0}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+.btn{border:1px solid var(--green-dk);background:var(--green-dk);color:#fff;padding:9px 16px;border-radius:2px;font-size:13.5px;font-weight:500}
+.btn:hover{background:#085A45}
+.btn.ghost{background:transparent;color:var(--green-dk)}
+.btn.ghost:hover{background:var(--green-tint)}
+.btn.mini{padding:4px 10px;font-size:12px}
+.btnrow{display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s3)}
+.modes{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.modes button{padding:9px 8px;border:0;background:#fff;font-size:13px;color:var(--muted)}
+.modes button + button{border-left:1px solid var(--line)}
+.modes button[aria-pressed=true]{background:var(--deep);color:#fff}
+.wrow{display:grid;grid-template-columns:minmax(0,1fr) 88px 42px;align-items:center;gap:var(--s2);margin-bottom:var(--s1)}
+.wrow span{font-size:13px;line-height:1.25}
+.wrow output{font-family:var(--mono);font-size:13px;text-align:right}
+input[type=range]{width:100%;accent-color:var(--green-dk);margin:0}
+.picklist{display:grid;gap:var(--s1)}
+.pick{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;align-items:start;font-size:13px;padding:4px 0}
+.pick input{margin:3px 0 0;accent-color:var(--green-dk)}
+.pick .meta{display:block;color:var(--muted);font-family:var(--mono);font-size:11.5px;margin-top:1px}
+
+/* ---------- métricas ---------- */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(154px,1fr));gap:1px;background:var(--line-soft)}
+.metric{background:var(--panel);padding:13px var(--s3);display:flex;flex-direction:column;justify-content:space-between;min-height:74px}
+.metric .k{font-size:11.5px;color:var(--muted);margin-bottom:5px;line-height:1.25}
+.metric .v{font-family:var(--mono);font-size:20px;line-height:1.15}
+.metric .u{font-size:11.5px;color:var(--muted);margin-left:4px;font-family:var(--sans)}
+
+/* ---------- gráficos ---------- */
+.chartwrap{padding:var(--s3);position:relative}
+.chartwrap svg{width:100%;height:auto;display:block;touch-action:none}
+.legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);font-size:12px;color:var(--muted);padding:0 var(--s3) var(--s3)}
+.legend span{display:flex;align-items:center;gap:6px}
+.hit{cursor:pointer}
+.bar-g rect{transition:opacity .12s}
+.dim{opacity:.22!important}
+.tip{
+  position:fixed;z-index:70;pointer-events:none;opacity:0;
+  background:var(--ink);color:#DCE6E2;border-radius:var(--r);
+  padding:9px 11px;font-size:12.5px;line-height:1.45;max-width:270px;
+  box-shadow:0 6px 20px rgba(10,28,26,.3);
+}
+.tip.on{opacity:1}
+.tip b{color:#fff;display:block;margin-bottom:3px;font-size:13px}
+.tip dl{display:grid;grid-template-columns:1fr auto;gap:2px var(--s2);margin:0}
+.tip dt{color:#8CA29D}
+.tip dd{margin:0;font-family:var(--mono);text-align:right}
+.tip .foot{color:#7E958F;font-size:11.5px;margin-top:5px;border-top:1px solid #23443E;padding-top:5px}
+
+/* ---------- cenários ---------- */
+.scen + .scen{border-top:1px solid var(--line-soft)}
+.scenhead{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:var(--s2) var(--s3);align-items:start;padding:13px var(--s3);width:100%;background:none;border:0;text-align:left;font-size:inherit;color:inherit}
+.scenhead:hover{background:#EDF2F0}
+.rank{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:3px}
+.scenname strong{font-weight:600;font-size:14px}
+.scenname .techs{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4;display:block}
+.scorepill{font-family:var(--mono);font-size:16px;padding-top:1px}
+.best{background:var(--green-tint)}
+.best .scenhead:hover{background:#DEEDE7}
+.scen.flash{animation:flash 1.1s ease-out}
+@keyframes flash{0%{background:#CFE6DC}100%{background:transparent}}
+.flag{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:2px;background:var(--green-dk);color:#fff;margin-left:7px;vertical-align:1.5px}
+.flag.mine{background:var(--deep)}
+.flag.block{background:var(--alert)}
+.scenbody{padding:0 var(--s3) var(--s3) calc(24px + var(--s3) + var(--s3))}
+.mix{display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:var(--s2) var(--s3)}
+.mix div{border-left:2px solid var(--line);padding-left:9px}
+.mix .k{font-size:11.5px;color:var(--muted);line-height:1.25}
+.mix .v{font-family:var(--mono);font-size:14px}
+.just{font-size:13px;color:#2C443F;margin-top:var(--s3);border-left:2px solid var(--green);padding-left:11px;line-height:1.5}
+.empty{padding:var(--s4) var(--s3);color:var(--muted);font-size:13.5px}
+.reason{font-size:12.5px;color:var(--alert);margin-top:4px;line-height:1.45;display:block}
+.fixline{font-size:12.5px;color:var(--muted);margin-top:2px;display:block}
+.togglebar{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);padding:11px var(--s3);border-top:1px solid var(--line-soft);background:#F1F4F3}
+
+/* ---------- tabela ---------- */
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:940px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:11.5px;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom}
+td{padding:6px 8px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.hl{background:#EFF5F2}
+th.n{text-align:right} td.n input{text-align:right}
+.techtable input[type=number]{padding:4px 6px;font-size:12.5px;width:100%;min-width:62px}
+.techtable input[type=text]{padding:4px 6px;font-size:12.5px;width:100%;min-width:190px}
+.techtable select{padding:4px 6px;font-size:12.5px;min-width:106px}
+.effort{display:flex;align-items:center;gap:8px}
+.track{display:block;width:56px;height:5px;background:var(--line-soft);border-radius:2px;overflow:hidden;flex:0 0 auto}
+.track i{display:block;height:100%;background:var(--deep)}
+.effort em{font-style:normal;font-family:var(--mono);font-size:12px;width:20px;text-align:right}
+.del{border:1px solid var(--line);background:#fff;color:var(--muted);width:24px;height:24px;border-radius:2px;line-height:1;font-size:15px;padding:0}
+.del:hover{border-color:var(--alert);color:var(--alert)}
+
+footer{padding-block:0 64px;font-size:12.5px;color:var(--muted);line-height:1.55}
+footer code{font-family:var(--mono);font-size:12px;background:#D7DFDC;padding:1px 5px;border-radius:2px}
+
+/* ---------- assistente ---------- */
+.fab{position:fixed;right:var(--pad);bottom:var(--pad);z-index:40;background:var(--deep);color:#fff;border:0;border-radius:24px;padding:12px 20px;font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(10,28,26,.28);display:flex;align-items:center;gap:9px}
+.fab:hover{background:var(--ink)}
+.fab i{display:block;width:8px;height:8px;border-radius:50%;background:var(--green)}
+.fab[hidden]{display:none}
+.assistant{position:fixed;right:0;top:0;bottom:0;width:min(420px,100vw);z-index:50;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-8px 0 28px rgba(10,28,26,.16)}
+.assistant[hidden]{display:none}
+.ahead{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);padding:var(--s3);background:var(--ink);color:#fff}
+.ahead h2{font-size:15px;display:flex;align-items:center;gap:var(--s2)}
+.ahead .sig{color:#5D7B74;font-size:10.5px}
+.ahead p{font-size:12.5px;color:#8CA29D;margin:2px 0 0}
+.aclose{background:none;border:0;color:#BFD2CD;font-size:22px;line-height:1;padding:2px 6px}
+.aclose:hover{color:#fff}
+.atabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--deep)}
+.atabs button{background:none;border:0;color:#9FB3AE;padding:10px 6px;font-size:13px;border-bottom:2px solid transparent}
+.atabs button[aria-selected=true]{color:#fff;border-bottom-color:var(--green)}
+.abody{flex:1;overflow-y:auto;padding:var(--s3);display:flex;flex-direction:column;gap:var(--s3)}
+.note{border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:var(--s3)}
+.note h3{font-size:13.5px;margin-bottom:5px}
+.note p{font-size:13px;line-height:1.5;color:#2C443F}
+.note.warn{border-left:3px solid var(--flare)}
+.note.bad{border-left:3px solid var(--alert)}
+.note.ok{border-left:3px solid var(--green)}
+.note .do{margin-top:9px;display:flex;gap:var(--s1);flex-wrap:wrap}
+.metricdef{border-bottom:1px solid var(--line-soft);padding-bottom:var(--s3)}
+.metricdef:last-child{border-bottom:0;padding-bottom:0}
+.metricdef h3{font-size:13.5px;display:flex;justify-content:space-between;gap:var(--s2);align-items:baseline}
+.metricdef h3 span{font-family:var(--mono);font-size:13px;color:var(--green-dk);font-weight:500}
+.metricdef .f{font-family:var(--mono);font-size:12px;background:#EDF1EF;padding:3px 7px;border-radius:2px;display:inline-block;margin:5px 0 6px}
+.metricdef p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5}
+.qlist{display:flex;flex-direction:column;gap:var(--s1)}
+.q{text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;font-size:13px}
+.q:hover{border-color:var(--green);background:var(--green-tint)}
+.answer{background:var(--deep);color:#DCE6E2;border-radius:var(--r);padding:var(--s3);font-size:13px;line-height:1.55}
+.ai-chat{display:flex;flex-direction:column;gap:10px;min-height:100%;}
+.ai-intro{font-size:12px;line-height:1.45;color:var(--muted);margin:0 0 2px}
+.ai-transcript{display:flex;flex-direction:column;gap:9px}
+.ai-msg{white-space:pre-wrap;overflow-wrap:anywhere;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5}
+.ai-msg.user{background:#E4F0EB;border:1px solid #C5DCD3;margin-left:18px}
+.ai-msg.bot{background:#fff;border:1px solid var(--line);margin-right:8px}
+.ai-msg b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;color:var(--green)}
+.ai-form{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.ai-form textarea{width:100%;min-height:76px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;font-size:13px;background:#fff;color:var(--ink)}
+.ai-form .btn{align-self:flex-end}
+.ai-suggestions{display:flex;flex-wrap:wrap;gap:6px}
+.ai-suggestions button{font-size:11px;border:1px solid var(--line);border-radius:20px;background:#fff;padding:6px 9px;color:var(--ink)}
+.ai-disclaimer{font-size:11px;color:var(--muted);line-height:1.4}
+.ai-status{font-size:12px;color:var(--muted)}
+
+/* ---------- passo a passo ---------- */
+.tourmask{position:fixed;inset:0;background:rgba(10,28,26,.45);z-index:60}
+.tourmask[hidden]{display:none}
+.tourcard{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:61;width:min(520px,calc(100vw - 32px));background:#fff;border-radius:var(--r);padding:var(--s4);box-shadow:0 8px 32px rgba(10,28,26,.3)}
+.tourcard[hidden]{display:none}
+.tourcard h3{font-size:16px;margin-bottom:6px}
+.tourcard p{font-size:13.5px;color:#2C443F;line-height:1.55}
+.tourfoot{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);margin-top:var(--s3)}
+.tourfoot .step{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.spotlight{position:relative;z-index:62;outline:3px solid var(--green);outline-offset:3px;border-radius:var(--r);background:var(--panel)}
+
+@media (max-width:1140px){
+  main{grid-template-columns:1fr}
+  .rail{position:static;max-height:none;overflow:visible}
+  .hero{grid-template-columns:1fr;gap:var(--s4)}
+  .hero-read{border-left:0;border-top:1px solid #1E3E38;padding:var(--s4) 0 0}
+  .hero-read dl{max-width:420px}
+}
+@media (max-width:640px){
+  .grid3{grid-template-columns:1fr 1fr}
+  .scenbody{padding-left:var(--s3)}
+  .assistant{width:100vw}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <h1>CarbonPath <em>2050</em> <span class="sig">CpB</span></h1>
+    <div class="tag">Planejamento de descarbonização para ativos de óleo e gás: quanto a operação emite, o que reduz, quanto custa e o que cabe no orçamento.</div>
+    <div class="acts">
+      <button class="linkbtn" id="tourBtn">Passo a passo</button>
+      <button class="linkbtn" id="openAssist">Abrir assistente</button>
+    </div>
+  </div>
+  <div class="wrap hero">
+    <div class="hero-chart">
+      <div class="ctrls">
+        <span class="lab">Projetar</span>
+        <div class="chips" id="projChips"></div>
+        <span class="lab" style="margin-left:auto">Escala</span>
+        <div class="chips" id="viewChips">
+          <button class="chip" data-view="abs" aria-pressed="true">tCO₂e/ano</button>
+          <button class="chip" data-view="rel" aria-pressed="false">% de hoje</button>
+          <button class="chip" data-view="cum" aria-pressed="false">Evitado acumulado</button>
+        </div>
+      </div>
+      <div id="heroChart"></div>
+    </div>
+    <div class="hero-read" id="heroRead"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="rail">
+    <section class="card" id="secOp">
+      <h2>Operação <b id="opId">—</b></h2>
+      <div class="body">
+        <div class="grid2">
+          <div class="field"><label for="tipo">Tipo de ativo</label>
+            <select id="tipo"><option value="offshore">Offshore</option><option value="onshore">Onshore</option></select></div>
+          <div class="field"><label for="combustivel">Combustível principal</label>
+            <select id="combustivel"><option value="gas">Gás natural</option><option value="diesel">Diesel</option><option value="misto">Gás + diesel</option></select></div>
+          <div class="field"><label for="producao">Produção (bbl/ano)</label><input type="number" id="producao" min="1" step="1000"></div>
+          <div class="field"><label for="gas">Consumo de gás (m³/ano)</label><input type="number" id="gas" min="0" step="1000"></div>
+          <div class="field"><label for="eletricidade">Eletricidade (MWh/ano)</label><input type="number" id="eletricidade" min="0" step="100"></div>
+          <div class="field"><label for="orcamento">Orçamento CAPEX (R$)</label><input type="number" id="orcamento" min="0" step="1000000"></div>
+        </div>
+        <fieldset>
+          <legend>Emissões por fonte (tCO₂e/ano)</legend>
+          <div class="grid2" style="margin-top:var(--s2)">
+            <div class="field"><label for="e_comb"><i class="swatch" style="background:var(--comb)"></i>Combustão</label><input type="number" id="e_comb" min="0" step="1000"></div>
+            <div class="field"><label for="e_flare"><i class="swatch" style="background:var(--flare)"></i>Flare</label><input type="number" id="e_flare" min="0" step="1000"></div>
+            <div class="field"><label for="e_vent"><i class="swatch" style="background:var(--vent)"></i>Venting</label><input type="number" id="e_vent" min="0" step="500"></div>
+            <div class="field"><label for="e_fug"><i class="swatch" style="background:var(--fug)"></i>Fugitivas</label><input type="number" id="e_fug" min="0" step="500"></div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Horizonte e meta</legend>
+          <div class="grid3" style="margin-top:var(--s2)">
+            <div class="field"><label for="anoIni">Ano inicial</label><input type="number" id="anoIni" min="2020" max="2049" step="1"></div>
+            <div class="field"><label for="anoMeta">Ano-meta</label><input type="number" id="anoMeta" min="2030" max="2060" step="1"></div>
+            <div class="field"><label for="metaRed">Redução alvo (%)</label><input type="number" id="metaRed" min="1" max="100" step="1"></div>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="card" id="secMode">
+      <h2>Como escolher o cenário</h2>
+      <div class="body">
+        <div class="modes" role="group" aria-label="Modo">
+          <button id="modeSim" aria-pressed="false">Simulação</button>
+          <button id="modeOpt" aria-pressed="true">Otimização</button>
+        </div>
+        <div id="simPane" hidden>
+          <p class="hint" style="margin:var(--s3) 0 var(--s2)">Marque as tecnologias que quer testar. O resultado entra no ranking ao lado.</p>
+          <div class="picklist" id="picklist"></div>
+        </div>
+        <div id="optPane">
+          <p class="hint" style="margin:var(--s3) 0 var(--s2)">O motor testa todas as combinações viáveis e ranqueia pelo score abaixo.</p>
+          <div class="grid2">
+            <div class="field"><label for="redMin">Redução mínima exigida (%)</label><input type="number" id="redMin" min="0" max="100" step="1"></div>
+            <div class="field"><label for="anoLimite">Concluir até o ano</label><input type="number" id="anoLimite" min="2026" max="2060" step="1"></div>
+          </div>
+        </div>
+        <fieldset id="secWeights">
+          <legend>Pesos do score</legend>
+          <div id="weights" style="margin-top:var(--s2)"></div>
+          <div class="hint" id="wsum"></div>
+        </fieldset>
+        <div class="btnrow">
+          <button class="btn" id="runBtn">Calcular cenários</button>
+          <button class="btn ghost" id="resetBtn">Restaurar padrões</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card" id="secMetrics">
+      <h2>Emissões da operação <b id="totLine">—</b></h2>
+      <div class="metrics" id="metrics"></div>
+      <div class="lightbar">
+        <span class="lab">Filtrar por fonte</span>
+        <div class="chips" id="srcChips"></div>
+      </div>
+      <div class="chartwrap" id="srcChart"></div>
+      <div class="legend" id="srcLegend"></div>
+    </section>
+
+    <section class="card" id="secScen">
+      <h2>Cenários viáveis <b id="scenCount">—</b></h2>
+      <div id="scenarios"><div class="empty">Ajuste os dados e calcule os cenários.</div></div>
+    </section>
+
+    <section class="card" id="secBlocked">
+      <h2>Cenários bloqueados <b id="blockCount">—</b></h2>
+      <div id="blocked"></div>
+      <div class="togglebar">
+        <span class="hint" id="blockHint"></span>
+        <button class="btn ghost mini" id="toggleBlocked">Ver todos</button>
+      </div>
+    </section>
+
+    <section class="card" id="secBubble">
+      <h2>Redução × custo × esforço</h2>
+      <div class="lightbar">
+        <span class="lab">Eixo horizontal</span>
+        <div class="chips" id="bubXChips">
+          <button class="chip light" data-x="cost" aria-pressed="true">Custo por tonelada</button>
+          <button class="chip light" data-x="capex" aria-pressed="false">CAPEX total</button>
+          <button class="chip light" data-x="effort" aria-pressed="false">Esforço</button>
+        </div>
+        <button class="chip light" id="bubBlocked" aria-pressed="true" style="margin-left:auto">Mostrar bloqueados</button>
+      </div>
+      <div class="chartwrap" id="bubbleChart"></div>
+      <div class="legend" id="bubbleLegend"></div>
+    </section>
+
+    <section class="card" id="secTech">
+      <h2>Banco de tecnologias <b>valores editáveis</b></h2>
+      <div class="tscroll">
+        <table class="techtable">
+          <thead><tr>
+            <th>Tecnologia</th><th>Fonte</th><th class="n">Redução %</th>
+            <th class="n">CAPEX<br>R$ mi</th><th class="n">OPEX<br>R$ mi/ano</th><th class="n">Anos</th>
+            <th class="n">Complex.</th><th class="n">Maturid.</th><th class="n">Infra</th>
+            <th>Esforço</th><th></th>
+          </tr></thead>
+          <tbody id="techBody"></tbody>
+        </table>
+      </div>
+      <div class="body" style="display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap;border-top:1px solid var(--line-soft)">
+        <button class="btn ghost mini" id="addTech">Adicionar tecnologia</button>
+        <span class="hint" style="flex:1 1 260px">Esforço = custo 25% + complexidade 25% + maturidade 20% + tempo 15% + infraestrutura 15%. Custo e tempo saem do CAPEX e dos anos; os outros três você informa.</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap" id="foot"></footer>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<button class="fab" id="openAssist2"><i></i>Assistente</button>
+
+<aside class="assistant" id="assistant" hidden aria-label="Assistente">
+  <div class="ahead">
+    <div>
+      <h2>Assistente <span class="sig">CpB</span></h2>
+      <p id="aSub">Lê os seus números e explica o que fazer</p>
+    </div>
+    <button class="aclose" id="closeAssist" aria-label="Fechar assistente">×</button>
+  </div>
+  <div class="atabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="diag">Diagnóstico</button>
+    <button role="tab" aria-selected="false" data-tab="metr">Métricas</button>
+    <button role="tab" aria-selected="false" data-tab="perg">Perguntas</button>
+    <button role="tab" aria-selected="false" data-tab="ia">IA gratuita</button>
+  </div>
+  <div class="abody" id="aBody"></div>
+</aside>
+
+<div class="tourmask" id="tourMask" hidden></div>
+<div class="tourcard" id="tourCard" hidden role="dialog" aria-label="Passo a passo">
+  <h3 id="tourTitle"></h3>
+  <p id="tourText"></p>
+  <div class="tourfoot">
+    <span class="step" id="tourStep"></span>
+    <span style="display:flex;gap:var(--s2)">
+      <button class="btn ghost mini" id="tourSkip">Sair</button>
+      <button class="btn mini" id="tourNext">Próximo</button>
+    </span>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============ 1. ESTADO ============ */
+const SOURCES=[
+  {key:"comb", label:"Combustão", hex:"#2F5F58"},
+  {key:"flare",label:"Flare",     hex:"#E2591B"},
+  {key:"vent", label:"Venting",   hex:"#6E8FA6"},
+  {key:"fug",  label:"Fugitivas", hex:"#B58A1E"}
+];
+const DEFAULT_OP={tipo:"offshore",combustivel:"gas",producao:25000000,gas:900000000,eletricidade:350000,
+  orcamento:600000000,e:{comb:1100000,flare:240000,vent:95000,fug:65000},
+  anoIni:2026,anoMeta:2050,metaRed:90,redMin:35,anoLimite:2040};
+const DEFAULT_TECHS=[
+  {id:1,nome:"LDAR — detecção e reparo de vazamentos",src:"fug",  red:60,capex:3500000,  opex:1200000, anos:1,complex:20,matur:10,infra:15},
+  {id:2,nome:"VRU — recuperação de vapores",           src:"vent", red:90,capex:12000000, opex:900000,  anos:2,complex:35,matur:20,infra:30},
+  {id:3,nome:"Pneumática → ar comprimido",             src:"vent", red:70,capex:6500000,  opex:400000,  anos:2,complex:30,matur:15,infra:35},
+  {id:4,nome:"Fim do flare rotineiro (recuperação)",   src:"flare",red:85,capex:45000000, opex:3500000, anos:3,complex:55,matur:25,infra:55},
+  {id:5,nome:"Eficiência energética de processo",      src:"comb", red:12,capex:15000000, opex:1000000, anos:2,complex:25,matur:10,infra:20},
+  {id:6,nome:"Turbina em ciclo combinado",             src:"comb", red:25,capex:180000000,opex:9000000, anos:4,complex:65,matur:25,infra:60},
+  {id:7,nome:"Reinjeção de CO₂ do gás associado",      src:"vent", red:80,capex:260000000,opex:18000000,anos:5,complex:75,matur:40,infra:70},
+  {id:8,nome:"Eletrificação com renovável",            src:"comb", red:55,capex:320000000,opex:12000000,anos:6,complex:80,matur:45,infra:85},
+  {id:9,nome:"CCUS pós-combustão",                     src:"comb", red:70,capex:650000000,opex:45000000,anos:8,complex:90,matur:70,infra:90}
+];
+const DEFAULT_W={R:40,C:25,O:20,F:15};
+
+let op=structuredClone(DEFAULT_OP), techs=structuredClone(DEFAULT_TECHS);
+let weights={...DEFAULT_W}, mode="opt", selected=new Set([1,2,3]);
+let scenarios=[], blocked=[], bestKey=null, nextId=100, showAllBlocked=false;
+let projIdx=0, heroView="abs", bubX="cost", showBlockedBubbles=true, focusSrc=null;
+
+/* ============ 2. FORMATAÇÃO ============ */
+const nf=(v,d=0)=>isFinite(v)?v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+const pct=(v,d=1)=>isFinite(v)?nf(v,d)+"%":"—";
+function brl(v){
+  if(!isFinite(v))return "—";
+  const a=Math.abs(v);
+  if(a>=1e9)return "R$ "+nf(v/1e9,2)+" bi";
+  if(a>=1e6)return "R$ "+nf(v/1e6,1)+" mi";
+  if(a>=1e3)return "R$ "+nf(v/1e3,0)+" mil";
+  return "R$ "+nf(v,0);
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shortName=n=>String(n).split("—")[0].split("(")[0].trim();
+
+/* ============ 3. MÉTRICAS ============ */
+function emissions(){
+  const total=SOURCES.reduce((s,f)=>s+(+op.e[f.key]||0),0);
+  const share={}; SOURCES.forEach(f=>share[f.key]=total?(+op.e[f.key]||0)/total*100:0);
+  const intens=op.producao>0?total/op.producao:0;
+  return {total,share,intens,intensKg:intens*1000};
+}
+function effortOf(t){
+  const maxCapex=Math.max(...techs.map(x=>+x.capex||0),1);
+  return clamp(.25*clamp((+t.capex||0)/maxCapex*100,0,100)+.25*(+t.complex||0)+.20*(+t.matur||0)
+    +.15*clamp((+t.anos||0)/8*100,0,100)+.15*(+t.infra||0),0,100);
+}
+function evaluate(ids){
+  const em=emissions();
+  const list=techs.filter(t=>ids.includes(t.id));
+  const residual={}; SOURCES.forEach(f=>residual[f.key]=1);
+  list.forEach(t=>{ if(residual[t.src]!==undefined) residual[t.src]*=(1-clamp((+t.red||0)/100,0,1)); });
+  let avoided=0; const avoidedBySrc={};
+  SOURCES.forEach(f=>{const a=(+op.e[f.key]||0)*(1-residual[f.key]); avoidedBySrc[f.key]=a; avoided+=a;});
+  const capex=list.reduce((s,t)=>s+(+t.capex||0),0);
+  const opex=list.reduce((s,t)=>s+(+t.opex||0),0);
+  const costPerT=avoided>0?(capex+opex)/avoided:Infinity;
+  const anos=list.length?Math.max(...list.map(t=>+t.anos||0)):0;
+  let wsum=0,esum=0;
+  list.forEach(t=>{const w=(+op.e[t.src]||0)*clamp((+t.red||0)/100,0,1)||1; wsum+=w; esum+=w*effortOf(t);});
+  const effort=wsum?esum/wsum:0;
+  const redPct=em.total?avoided/em.total*100:0;
+  const needPct=clamp(+op.metaRed||0,0,100);
+  return {key:list.map(t=>t.id).join(","),ids:list.map(t=>t.id),list,capex,opex,avoided,avoidedBySrc,
+    costPerT,effort,redPct,needPct,progress:needPct>0?redPct/needPct*100:0,anos,
+    emAfter:em.total-avoided,overBudget:capex>(+op.orcamento||0),ready:(+op.anoIni||2026)+anos};
+}
+function scoreAll(cands){
+  const w=weights, tw=(w.R+w.C+w.O+w.F)||1;
+  const costs=cands.map(c=>c.costPerT).filter(v=>isFinite(v)&&v>0);
+  const bestCost=costs.length?Math.min(...costs):1;
+  const budget=+op.orcamento||0;
+  cands.forEach(c=>{
+    const R=clamp(c.needPct>0?c.redPct/c.needPct*100:0,0,100);
+    const C=isFinite(c.costPerT)&&c.costPerT>0?clamp(bestCost/c.costPerT*100,0,100):0;
+    const O=budget>0?clamp((1-c.capex/budget)*100,0,100):(c.capex?0:100);
+    const F=clamp(100-c.effort,0,100);
+    c.parts={R,C,O,F}; c.score=(w.R*R+w.C*C+w.O*O+w.F*F)/tw;
+  });
+  return cands;
+}
+
+/* ============ 4. MOTOR ============ */
+function reasonsFor(c){
+  const out=[], budget=+op.orcamento||0, redMin=+op.redMin||0, lim=+op.anoLimite||op.anoMeta;
+  if(c.capex>budget) out.push({type:"budget",txt:`CAPEX excede o orçamento em ${brl(c.capex-budget)}`,
+    fix:`Subir o orçamento para ${brl(c.capex)} ou trocar a tecnologia mais cara do conjunto.`});
+  if(c.redPct+1e-9<redMin) out.push({type:"red",txt:`Reduz ${pct(c.redPct,1)}, abaixo do mínimo de ${pct(redMin,0)}`,
+    fix:`Faltam ${pct(redMin-c.redPct,1)} — inclua uma tecnologia na fonte de maior peso ou baixe a exigência.`});
+  if(c.ready>lim){
+    const lenta=c.list.slice().sort((a,b)=>b.anos-a.anos)[0];
+    out.push({type:"time",txt:`Fica pronto em ${c.ready}, depois do limite de ${lim}`,
+      fix:`O atraso vem de ${esc(shortName(lenta?lenta.nome:"—"))}, que leva ${lenta?lenta.anos:0} anos.`});
+  }
+  return out;
+}
+function enumerate(){
+  const budget=+op.orcamento||0, viable=[], rejected=[], pool=techs.slice(0,18), n=pool.length;
+  const push=c=>{const rs=reasonsFor(c); if(rs.length){c.reasons=rs; rejected.push(c);} else viable.push(c);};
+  if(n<=16){
+    for(let m=1;m<(1<<n);m++){
+      const ids=[]; let cap=0;
+      for(let i=0;i<n;i++) if(m&(1<<i)){ids.push(pool[i].id); cap+=(+pool[i].capex||0);}
+      if(cap>budget*2.2 && cap>budget+1) continue;
+      push(evaluate(ids));
+    }
+  }else{
+    let beam=[[]], seen=new Set();
+    for(let d=0;d<8;d++){
+      const next=[];
+      beam.forEach(base=>pool.forEach(t=>{
+        if(base.includes(t.id))return;
+        const ids=base.concat(t.id).sort((a,b)=>a-b), k=ids.join(",");
+        if(seen.has(k))return; seen.add(k);
+        const c=evaluate(ids); next.push(c); push(c);
+      }));
+      if(!next.length)break;
+      scoreAll(next).sort((a,b)=>b.score-a.score);
+      beam=next.slice(0,50).map(c=>c.ids);
+    }
+  }
+  return {viable,rejected};
+}
+function nameFor(c){
+  if(!c.list.length)return "Sem tecnologias";
+  const lead=c.list.slice().sort((a,b)=>((+op.e[b.src]||0)*b.red)-((+op.e[a.src]||0)*a.red))[0];
+  const s=shortName(lead.nome);
+  if(c.list.length===1)return s;
+  const srcs=new Set(c.list.map(t=>t.src)).size;
+  return `${s} + ${c.list.length-1} ${c.list.length===2?"outra":"outras"}${srcs>1?" · "+srcs+" fontes":""}`;
+}
+function diversify(list,max){
+  const out=[], used=new Set();
+  for(const c of list){
+    const sig=c.ids.slice(0,Math.max(1,c.ids.length-1)).join(",");
+    if(used.has(sig)&&out.length>=3)continue;
+    used.add(sig); out.push(c);
+    if(out.length>=max)break;
+  }
+  return out;
+}
+function run(){
+  readForm();
+  const {viable,rejected}=enumerate();
+  scoreAll(viable); scoreAll(rejected);
+  viable.sort((a,b)=>b.score-a.score); rejected.sort((a,b)=>b.score-a.score);
+  scenarios=diversify(viable,5); scenarios.forEach(c=>c.kind="auto");
+  if(mode==="sim"){
+    const mine=evaluate([...selected]);
+    mine.reasons=reasonsFor(mine); mine.kind="mine"; mine.name="Sua seleção";
+    scoreAll(scenarios.concat([mine]));
+    if(mine.reasons.length) blocked=[mine].concat(diversify(rejected,5)).slice(0,6);
+    else{ scenarios=[mine].concat(scenarios).slice(0,6).sort((a,b)=>b.score-a.score); blocked=diversify(rejected,6); }
+  }else blocked=diversify(rejected,6);
+  scenarios.forEach((c,i)=>{c.rank=i+1; c.name=c.name||nameFor(c);});
+  blocked.forEach((c,i)=>{c.rank=i+1; c.name=c.name||nameFor(c);});
+  bestKey=scenarios.length?scenarios[0].key:null;
+  if(projIdx>=scenarios.length) projIdx=0;
+  render();
+}
+
+/* ============ 5. TOOLTIP ============ */
+const tip=document.getElementById("tip");
+function tipShow(html,ev){
+  tip.innerHTML=html; tip.classList.add("on"); tipMove(ev);
+}
+function tipMove(ev){
+  const pad=14, r=tip.getBoundingClientRect();
+  let x=ev.clientX+pad, y=ev.clientY+pad;
+  if(x+r.width>innerWidth-8) x=ev.clientX-r.width-pad;
+  if(y+r.height>innerHeight-8) y=ev.clientY-r.height-pad;
+  tip.style.left=Math.max(8,x)+"px"; tip.style.top=Math.max(8,y)+"px";
+}
+function tipHide(){ tip.classList.remove("on"); }
+function dlRows(rows){ return `<dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`; }
+addEventListener("scroll",tipHide,{passive:true});
+
+/* ============ 6. GRÁFICO DE TRAJETÓRIA ============ */
+let heroS=null;
+
+function projScenario(){ return scenarios[projIdx]||null; }
+
+function heroChart(){
+  const em=emissions();
+  const y0=+op.anoIni||2026, y1=Math.max(+op.anoMeta||2050,y0+1);
+  const span=y1-y0, best=projScenario();
+  const W=760,H=310,L=70,R=86,T=24,B=40;
+
+  const valAt=yr=>{
+    if(!best) return heroView==="cum"?0:(heroView==="rel"?100:em.total);
+    const t=best.anos>0?clamp((yr-y0)/best.anos,0,1):1;
+    const e=em.total-best.avoided*t;
+    if(heroView==="rel") return em.total?e/em.total*100:0;
+    if(heroView==="cum"){
+      let acc=0;
+      for(let k=y0;k<=yr;k++){const tk=best.anos>0?clamp((k-y0)/best.anos,0,1):1; acc+=best.avoided*tk;}
+      return acc;
+    }
+    return e;
+  };
+  const baseAt=()=>heroView==="rel"?100:(heroView==="cum"?0:em.total);
+  const metaVal=heroView==="rel"?100-clamp(op.metaRed,0,100)
+    :heroView==="cum"?em.total*clamp(op.metaRed,0,100)/100*(span)
+    :em.total*(1-clamp(op.metaRed,0,100)/100);
+
+  let maxY;
+  if(heroView==="cum") maxY=Math.max(valAt(y1),metaVal,1)*1.05;
+  else if(heroView==="rel") maxY=100;
+  else maxY=Math.max(em.total,1);
+
+  const x=yr=>L+(yr-y0)/span*(W-L-R);
+  const y=v=>T+(1-clamp(v/maxY,0,1))*(H-T-B);
+  heroS={y0,y1,span,L,R,T,B,W,H,maxY,em,valAt,baseAt,metaVal,x,y};
+
+  const curve=fn=>{let d="";for(let yr=y0;yr<=y1;yr++)d+=(yr===y0?"M":"L")+x(yr).toFixed(1)+" "+y(fn(yr)).toFixed(1)+" ";return d.trim();};
+  const area=`${curve(valAt)} L ${x(y1).toFixed(1)} ${y(metaVal).toFixed(1)} L ${x(y0).toFixed(1)} ${y(metaVal).toFixed(1)} Z`;
+
+  let grid="";
+  for(let i=1;i<=3;i++){
+    const gy=T+(H-T-B)*i/4;
+    grid+=`<line x1="${L}" y1="${gy.toFixed(1)}" x2="${(W-R+42)}" y2="${gy.toFixed(1)}" stroke="#16332E"/>`;
+  }
+  let ticks="";
+  const step=Math.max(1,Math.ceil(span/6));
+  for(let yr=y0;yr<y1;yr+=step)
+    ticks+=`<text x="${x(yr).toFixed(1)}" y="${H-14}" fill="#8CA29D" font-size="11" text-anchor="middle" font-family="IBM Plex Mono">${yr}</text>`;
+  ticks+=`<text x="${x(y1).toFixed(1)}" y="${H-14}" fill="#8CA29D" font-size="11" text-anchor="middle" font-family="IBM Plex Mono">${y1}</text>`;
+
+  const unit=heroView==="rel"?"%":"";
+  const fmtAxis=v=>heroView==="rel"?nf(v,0)+"%":nf(v/1000,0)+"k";
+  const endY=y(valAt(y1));
+  const showMeta=heroView!=="cum";
+
+  document.getElementById("heroChart").innerHTML=`
+  <svg viewBox="0 0 ${W} ${H}" id="heroSvg" role="img"
+       aria-label="Trajetória de emissões de ${y0} a ${y1}. Passe o cursor para ler ano a ano.">
+    ${grid}
+    <line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#1E3E38"/>
+    <line x1="${L}" y1="${H-B}" x2="${W-R+42}" y2="${H-B}" stroke="#1E3E38"/>
+    <text x="${L-10}" y="${(T+4)}" fill="#8CA29D" font-size="11" text-anchor="end" font-family="IBM Plex Mono">${fmtAxis(maxY)}</text>
+    <text x="${L-10}" y="${(H-B+4)}" fill="#8CA29D" font-size="11" text-anchor="end" font-family="IBM Plex Mono">0</text>
+    ${showMeta?`<path d="${area}" fill="#E2591B" opacity=".13"/>`:""}
+    ${showMeta?`<line x1="${L}" y1="${y(metaVal).toFixed(1)}" x2="${W-R+42}" y2="${y(metaVal).toFixed(1)}" stroke="#D9B45B" stroke-dasharray="5 4"/>
+      <text x="${W-R+46}" y="${(y(metaVal)+4).toFixed(1)}" fill="#D9B45B" font-size="11.5">meta ${y1}</text>
+      <text x="${L-10}" y="${(y(metaVal)+4).toFixed(1)}" fill="#D9B45B" font-size="11" text-anchor="end" font-family="IBM Plex Mono">${fmtAxis(metaVal)}</text>`:""}
+    ${heroView!=="cum"?`<path d="${curve(baseAt)}" fill="none" stroke="#5B6E69" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="${W-R+46}" y="${(y(baseAt())+4).toFixed(1)}" fill="#8CA29D" font-size="11.5">sem ação</text>`:""}
+    ${best?`<path d="${curve(valAt)}" fill="none" stroke="#0E8F6E" stroke-width="2.5"/>
+      <circle cx="${x(y1).toFixed(1)}" cy="${endY.toFixed(1)}" r="4" fill="#0E8F6E"/>
+      <text x="${W-R+46}" y="${(endY+4).toFixed(1)}" fill="#0E8F6E" font-size="11.5">cenário ${best.rank}</text>`:""}
+    ${ticks}
+    <g id="hCross" opacity="0">
+      <line id="hLine" x1="0" y1="${T}" x2="0" y2="${H-B}" stroke="#DCE6E2" stroke-width="1" stroke-dasharray="2 3"/>
+      <circle id="hDot" r="5" fill="#0E8F6E" stroke="#0A1C1A" stroke-width="2"/>
+      <circle id="hDotB" r="3.5" fill="#5B6E69"/>
+    </g>
+    <rect x="${L}" y="${T}" width="${W-L-R+42}" height="${H-T-B}" fill="transparent" id="hHit" style="cursor:crosshair"/>
+  </svg>`;
+
+  const svg=document.getElementById("heroSvg");
+  const hit=document.getElementById("hHit");
+  hit.addEventListener("pointermove",ev=>{
+    const r=svg.getBoundingClientRect();
+    const xv=(ev.clientX-r.left)/r.width*W;
+    const yr=Math.round(clamp(y0+(xv-L)/(W-L-R)*span,y0,y1));
+    const v=valAt(yr), b=baseAt();
+    document.getElementById("hCross").setAttribute("opacity","1");
+    document.getElementById("hLine").setAttribute("x1",x(yr)); document.getElementById("hLine").setAttribute("x2",x(yr));
+    const dot=document.getElementById("hDot"); dot.setAttribute("cx",x(yr)); dot.setAttribute("cy",y(v));
+    const dotB=document.getElementById("hDotB"); dotB.setAttribute("cx",x(yr)); dotB.setAttribute("cy",y(b));
+    const rows = heroView==="cum"
+      ? [["Evitado acumulado",nf(v,0)+" t"],["Equivale a",pct(em.total?v/(em.total*span)*100:0,1)+" do período"]]
+      : heroView==="rel"
+      ? [["Emissão",pct(v,1)+" de hoje"],["Sem ação",pct(b,0)],["Meta",pct(metaVal,0)],["Distância da meta",pct(Math.max(0,v-metaVal),1)]]
+      : [["Emissão",nf(v,0)+" t"],["Sem ação",nf(b,0)+" t"],["Evitado no ano",nf(b-v,0)+" t"],["Falta p/ meta",nf(Math.max(0,v-metaVal),0)+" t"]];
+    const status=best?(best.anos>0&&yr<y0+best.anos?`Implantação em curso · conclui em ${best.ready}`:`Implantação concluída`):"Nenhum cenário projetado";
+    tipShow(`<b>${yr}</b>${dlRows(rows)}<div class="foot">${esc(status)}</div>`,ev);
+  });
+  hit.addEventListener("pointerleave",()=>{
+    document.getElementById("hCross").setAttribute("opacity","0"); tipHide();
+  });
+}
+
+function renderProjChips(){
+  const box=document.getElementById("projChips");
+  if(!scenarios.length){ box.innerHTML=`<span class="lab">nenhum cenário viável</span>`; return; }
+  box.innerHTML=scenarios.map((c,i)=>
+    `<button class="chip" data-proj="${i}" aria-pressed="${i===projIdx}" title="${esc(c.name)}">${c.kind==="mine"?"Sua seleção":"Cenário "+c.rank}</button>`).join("");
+}
+
+/* ============ 7. GRÁFICO DE FONTES ============ */
+function srcChart(){
+  const em=emissions();
+  const W=760,H=196,L=104,R=118,T=12,B=12;
+  const rowH=(H-T-B)/SOURCES.length;
+  const max=Math.max(...SOURCES.map(f=>+op.e[f.key]||0),1);
+  const best=projScenario();
+  let bars="";
+  SOURCES.forEach((f,i)=>{
+    const v=+op.e[f.key]||0;
+    const w=(v/max)*(W-L-R);
+    const yy=T+i*rowH+rowH*.22, h=rowH*.46;
+    const av=best?(best.avoidedBySrc[f.key]||0):0;
+    const aw=(av/max)*(W-L-R);
+    const dim=focusSrc&&focusSrc!==f.key?" dim":"";
+    bars+=`<g class="bar-g hit${dim}" data-src="${f.key}">
+      <rect x="0" y="${(T+i*rowH).toFixed(1)}" width="${W}" height="${rowH.toFixed(1)}" fill="transparent"/>
+      <text x="${L-12}" y="${(yy+h/2+4).toFixed(1)}" text-anchor="end" font-size="12.5" fill="#0A1C1A">${f.label}</text>
+      <rect x="${L}" y="${yy.toFixed(1)}" width="${Math.max(w,1).toFixed(1)}" height="${h.toFixed(1)}" fill="${f.hex}" opacity=".24" rx="1"/>
+      <rect x="${L}" y="${yy.toFixed(1)}" width="${Math.max(aw,0).toFixed(1)}" height="${h.toFixed(1)}" fill="${f.hex}" rx="1"/>
+      ${aw>3?`<line x1="${(L+aw).toFixed(1)}" y1="${(yy-3).toFixed(1)}" x2="${(L+aw).toFixed(1)}" y2="${(yy+h+3).toFixed(1)}" stroke="#0A1C1A" stroke-width="1.5"/>`:""}
+      <text x="${(L+w+10).toFixed(1)}" y="${(yy+h/2+4).toFixed(1)}" font-size="11.5" fill="#5B6E69" font-family="IBM Plex Mono">${nf(v/1000,0)}k · ${pct(em.share[f.key],0)}</text>
+    </g>`;
+  });
+  document.getElementById("srcChart").innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" id="srcSvg" role="img" aria-label="Emissões por fonte">${bars}</svg>`;
+
+  document.getElementById("srcSvg").querySelectorAll("[data-src]").forEach(g=>{
+    const k=g.dataset.src, f=SOURCES.find(s=>s.key===k);
+    const v=+op.e[k]||0, av=best?(best.avoidedBySrc[k]||0):0;
+    const atuando=best?best.list.filter(t=>t.src===k):[];
+    const disp=techs.filter(t=>t.src===k);
+    g.addEventListener("pointerenter",ev=>{
+      tipShow(`<b>${esc(f.label)}</b>${dlRows([
+        ["Emite hoje",nf(v,0)+" t"],
+        ["Participação",pct(em.share[k],1)],
+        ["Evitado no cenário",nf(av,0)+" t"],
+        ["Permanece",nf(v-av,0)+" t"],
+        ["Tecnologias no banco",disp.length]
+      ])}<div class="foot">${atuando.length?"No cenário: "+esc(atuando.map(t=>shortName(t.nome)).join(", ")):"Nenhuma tecnologia do cenário atua aqui"} · clique para filtrar</div>`,ev);
+    });
+    g.addEventListener("pointermove",tipMove);
+    g.addEventListener("pointerleave",tipHide);
+    g.addEventListener("click",()=>setFocusSrc(focusSrc===k?null:k));
+  });
+
+  document.getElementById("srcLegend").innerHTML=
+    `<span><i class="swatch" style="background:var(--deep)"></i>Parte cheia: evitado pelo cenário projetado</span>
+     <span><i class="swatch" style="background:#C5D0CC"></i>Parte clara: emissão que permanece</span>
+     <span>Clique numa barra para ver só as tecnologias daquela fonte</span>`;
+}
+
+function renderSrcChips(){
+  document.getElementById("srcChips").innerHTML=
+    `<button class="chip light" data-fsrc="" aria-pressed="${!focusSrc}">Todas</button>`+
+    SOURCES.map(f=>`<button class="chip light" data-fsrc="${f.key}" aria-pressed="${focusSrc===f.key}">${f.label}</button>`).join("");
+}
+function setFocusSrc(k){
+  focusSrc=k||null;
+  renderSrcChips(); srcChart(); renderTechTable(); renderPicklist();
+}
+
+/* ============ 8. GRÁFICO DE BOLHAS ============ */
+const BUB_X={
+  cost:{label:"Custo por tonelada evitada (R$/tCO₂e)",get:c=>isFinite(c.costPerT)?c.costPerT:0,fmt:v=>nf(v,0)},
+  capex:{label:"CAPEX total (R$)",get:c=>c.capex,fmt:v=>brl(v)},
+  effort:{label:"Índice de esforço (0–100)",get:c=>c.effort,fmt:v=>nf(v,0)}
+};
+function bubbleChart(){
+  const el=document.getElementById("bubbleChart");
+  const all=scenarios.concat(showBlockedBubbles?blocked.filter(b=>b.avoided>0):[]);
+  if(!all.length){ el.innerHTML=`<div class="empty" style="padding:0">Calcule os cenários para ver a comparação.</div>`;
+    document.getElementById("bubbleLegend").innerHTML=""; return; }
+  const cfg=BUB_X[bubX];
+  const W=760,H=330,L=82,R=34,T=26,B=56;
+  const xMax=Math.max(...all.map(c=>cfg.get(c)))*1.18||1;
+  const yMax=Math.max(...all.map(c=>c.avoided))*1.18||1;
+  const x=v=>L+(v/xMax)*(W-L-R), y=v=>T+(1-v/yMax)*(H-T-B);
+  const orc=+op.orcamento||0;
+
+  let grid="";
+  for(let i=1;i<=3;i++){const gy=T+(H-T-B)*i/4;
+    grid+=`<line x1="${L}" y1="${gy.toFixed(1)}" x2="${W-R}" y2="${gy.toFixed(1)}" stroke="#DDE4E1"/>`;}
+  for(let i=1;i<=3;i++){const gx=L+(W-L-R)*i/4;
+    grid+=`<line x1="${gx.toFixed(1)}" y1="${T}" x2="${gx.toFixed(1)}" y2="${H-B}" stroke="#DDE4E1"/>`;}
+
+  // linha de orçamento quando o eixo é CAPEX
+  let budgetLine="";
+  if(bubX==="capex"&&orc>0&&orc<xMax){
+    budgetLine=`<line x1="${x(orc).toFixed(1)}" y1="${T}" x2="${x(orc).toFixed(1)}" y2="${H-B}" stroke="#B5352D" stroke-dasharray="4 3"/>
+      <text x="${(x(orc)+6).toFixed(1)}" y="${T+12}" font-size="11" fill="#B5352D">orçamento</text>`;
+  }
+
+  let dots="";
+  all.forEach(c=>{
+    const isB=!!(c.reasons&&c.reasons.length);
+    const cx=x(cfg.get(c)), cy=y(c.avoided), r=9+clamp(c.effort,0,100)/100*19;
+    const isBest=c.key===bestKey;
+    dots+=`<g class="hit" data-key="${esc(c.key)}" data-blocked="${isB?1:0}">
+      <circle class="bub" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"
+        fill="${isB?"#B5352D":(c.kind==="mine"?"#102B27":"#0E8F6E")}"
+        opacity="${isBest?".9":isB?".28":".45"}"
+        ${isB?'stroke="#B5352D" stroke-dasharray="3 3"':""}/>
+      <text x="${cx.toFixed(1)}" y="${(cy+4).toFixed(1)}" text-anchor="middle" font-size="11"
+        font-family="IBM Plex Mono" fill="${isB?"#B5352D":"#fff"}" pointer-events="none">${c.rank}</text>
+    </g>`;
+  });
+
+  el.innerHTML=`
+  <svg viewBox="0 0 ${W} ${H}" id="bubSvg" role="img" aria-label="Comparação entre redução, custo e esforço">
+    ${grid}${budgetLine}
+    <line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="#C5D0CC"/>
+    <line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#C5D0CC"/>
+    <text x="${((L+(W-R))/2).toFixed(1)}" y="${H-12}" text-anchor="middle" font-size="12" fill="#5B6E69">${esc(cfg.label)}</text>
+    <text transform="translate(22 ${((T+(H-B))/2).toFixed(1)}) rotate(-90)" text-anchor="middle" font-size="12" fill="#5B6E69">CO₂e evitado por ano</text>
+    <text x="${L-10}" y="${(y(yMax*.85)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#5B6E69" font-family="IBM Plex Mono">${nf(yMax*.85/1000,0)}k</text>
+    <text x="${L-10}" y="${(y(0)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#5B6E69" font-family="IBM Plex Mono">0</text>
+    <text x="${x(xMax*.85).toFixed(1)}" y="${H-B+17}" text-anchor="middle" font-size="11" fill="#5B6E69" font-family="IBM Plex Mono">${esc(cfg.fmt(xMax*.85))}</text>
+    ${dots}
+  </svg>`;
+
+  document.getElementById("bubSvg").querySelectorAll("[data-key]").forEach(g=>{
+    const c=all.find(s=>s.key===g.dataset.key);
+    g.addEventListener("pointerenter",ev=>{
+      const rows=[
+        ["CO₂e evitado",nf(c.avoided,0)+" t/ano"],
+        ["Redução",pct(c.redPct,1)],
+        ["CAPEX",brl(c.capex)],
+        ["Custo/t",isFinite(c.costPerT)?"R$ "+nf(c.costPerT,0):"—"],
+        ["Esforço",nf(c.effort,0)+"/100"],
+        ["Score",nf(c.score,1)]
+      ];
+      const foot=c.reasons&&c.reasons.length
+        ? "Bloqueado: "+esc(c.reasons.map(r=>r.txt).join(" · "))
+        : "Clique para ir ao cenário";
+      tipShow(`<b>${esc(c.name)}</b>${dlRows(rows)}<div class="foot">${foot}</div>`,ev);
+      highlightScen(c.key,true);
+    });
+    g.addEventListener("pointermove",tipMove);
+    g.addEventListener("pointerleave",()=>{tipHide(); highlightScen(c.key,false);});
+    g.addEventListener("click",()=>goToScen(c.key));
+  });
+
+  document.getElementById("bubbleLegend").innerHTML=
+    `<span><i class="swatch" style="background:var(--green)"></i>Viável</span>
+     <span><i class="swatch" style="background:var(--alert);opacity:.4"></i>Bloqueado</span>
+     <span>Bolha maior = mais esforço</span>
+     <span>Passe o cursor para os números, clique para abrir o cenário</span>`;
+}
+
+function highlightScen(key,on){
+  const el=document.querySelector(`[data-skey="${CSS.escape(key)}"]`);
+  if(el) el.style.background = on ? "#E3EDE9" : "";
+}
+function goToScen(key){
+  const el=document.querySelector(`[data-skey="${CSS.escape(key)}"]`);
+  if(!el)return;
+  el.scrollIntoView({block:"center",behavior:"smooth"});
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+}
+
+/* ============ 9. PAINÉIS ============ */
+function renderMetrics(){
+  const em=emissions(), best=projScenario();
+  const maior=SOURCES.reduce((a,b)=>(+op.e[a.key]||0)>(+op.e[b.key]||0)?a:b);
+  const cards=[
+    ["Emissões totais",nf(em.total,0),"tCO₂e/ano"],
+    ["Maior fonte",maior.label,pct(em.share[maior.key],0)],
+    ["Intensidade",nf(em.intensKg,1),"kg/bbl"],
+    ["Redução necessária",pct(op.metaRed,0),"até "+op.anoMeta],
+    ["CO₂e evitado",best?nf(best.avoided,0):"—","tCO₂e/ano"],
+    ["Custo por tonelada",best&&isFinite(best.costPerT)?"R$ "+nf(best.costPerT,0):"—","por tCO₂e"],
+    ["Esforço do cenário",best?nf(best.effort,0):"—","de 100"],
+    ["Progresso para "+op.anoMeta,best?pct(clamp(best.progress,0,100),0):"—",""]
+  ];
+  document.getElementById("metrics").innerHTML=cards.map(c=>
+    `<div class="metric"><div class="k">${esc(c[0])}</div><div class="v">${esc(c[1])}<span class="u">${esc(c[2])}</span></div></div>`).join("");
+  document.getElementById("totLine").textContent=nf(em.total,0)+" tCO₂e/ano";
+}
+function mixHTML(c){
+  return `<div class="mix">
+    <div><div class="k">CAPEX</div><div class="v">${brl(c.capex)}</div></div>
+    <div><div class="k">OPEX/ano</div><div class="v">${brl(c.opex)}</div></div>
+    <div><div class="k">CO₂e evitado/ano</div><div class="v">${nf(c.avoided,0)} t</div></div>
+    <div><div class="k">Redução</div><div class="v">${pct(c.redPct,1)}</div></div>
+    <div><div class="k">Custo/tCO₂e</div><div class="v">${isFinite(c.costPerT)?"R$ "+nf(c.costPerT,0):"—"}</div></div>
+    <div><div class="k">Esforço</div><div class="v">${nf(c.effort,0)}/100</div></div>
+    <div><div class="k">Progresso ${op.anoMeta}</div><div class="v">${pct(clamp(c.progress,0,100),0)}</div></div>
+    <div><div class="k">Pronto em</div><div class="v">${c.ready}</div></div>
+  </div>`;
+}
+function renderScenarios(){
+  const box=document.getElementById("scenarios");
+  document.getElementById("scenCount").textContent=scenarios.length?scenarios.length+" combinações":"nenhuma";
+  if(!scenarios.length){
+    box.innerHTML=`<div class="empty">Nenhuma combinação passa nas três restrições atuais: orçamento de ${brl(op.orcamento)}, redução mínima de ${pct(op.redMin,0)} e prazo até ${op.anoLimite}. Os cenários bloqueados abaixo mostram quanto falta em cada um.</div>`;
+    return;
+  }
+  box.innerHTML=scenarios.map(c=>{
+    const isBest=c.rank===1;
+    return `<div class="scen ${isBest?"best":""}" data-skey="${esc(c.key)}">
+      <button class="scenhead" type="button" data-proj-key="${esc(c.key)}">
+        <span class="rank">${c.rank}</span>
+        <span class="scenname">
+          <strong>${esc(c.name)}</strong>
+          ${isBest?'<span class="flag">Melhor estratégia</span>':""}
+          ${c.kind==="mine"?'<span class="flag mine">Sua seleção</span>':""}
+          <span class="techs">${c.list.map(t=>esc(shortName(t.nome))).join(" · ")||"—"}</span>
+        </span>
+        <span class="scorepill">${nf(c.score,1)}</span>
+      </button>
+      <div class="scenbody">${mixHTML(c)}${isBest?`<div class="just">${justify(c)}</div>`:""}</div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-proj-key]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const i=scenarios.findIndex(s=>s.key===b.dataset.projKey);
+      if(i>=0){projIdx=i; renderProjChips(); heroChart(); heroRead(); srcChart(); renderMetrics();}
+    });
+  });
+}
+function renderBlocked(){
+  const box=document.getElementById("blocked");
+  const list=showAllBlocked?blocked:blocked.slice(0,3);
+  document.getElementById("blockCount").textContent=blocked.length?blocked.length+" perto de viabilizar":"nenhum";
+  const tg=document.getElementById("toggleBlocked");
+  tg.textContent=showAllBlocked?"Ver menos":"Ver todos"; tg.hidden=blocked.length<=3;
+  document.getElementById("blockHint").textContent=blocked.length
+    ? "Combinações com score alto que foram rejeitadas. Cada uma mostra o que exatamente as trava."
+    : "Tudo que o motor testou passou nas restrições.";
+  if(!blocked.length){ box.innerHTML=`<div class="empty">Nenhuma combinação foi rejeitada com as restrições atuais.</div>`; return; }
+  box.innerHTML=list.map(c=>`
+    <div class="scen" data-skey="${esc(c.key)}">
+      <button class="scenhead" type="button">
+        <span class="rank">${c.rank}</span>
+        <span class="scenname">
+          <strong>${esc(c.name)}</strong>
+          ${c.reasons.map(r=>`<span class="flag block">${r.type==="budget"?"Orçamento":r.type==="red"?"Redução":"Prazo"}</span>`).join("")}
+          <span class="techs">${c.list.map(t=>esc(shortName(t.nome))).join(" · ")||"—"}</span>
+          ${c.reasons.map(r=>`<span class="reason">${esc(r.txt)}</span><span class="fixline">${r.fix}</span>`).join("")}
+        </span>
+        <span class="scorepill" style="color:var(--muted)">${nf(c.score,1)}</span>
+      </button>
+      <div class="scenbody">${mixHTML(c)}</div>
+    </div>`).join("");
+}
+function justify(c){
+  const p=c.parts, pares=[["redução",p.R],["custo-benefício",p.C],["folga no orçamento",p.O],["facilidade de execução",p.F]];
+  const forte=pares.slice().sort((a,b)=>b[1]-a[1])[0][0];
+  const fraco=pares.slice().sort((a,b)=>a[1]-b[1])[0][0];
+  const orc=+op.orcamento||1;
+  let t=`Lidera em ${forte} com os pesos atuais, consumindo ${pct(c.capex/orc*100,0)} do orçamento e deixando ${brl(Math.max(0,orc-c.capex))} livres. Ponto fraco: ${fraco}.`;
+  const riv=scenarios[1];
+  if(riv){
+    const dRed=c.redPct-riv.redPct, dCap=c.capex-riv.capex;
+    if(dRed<-0.05) t+=` O 2º colocado reduz ${pct(Math.abs(dRed),1)} a mais, mas custa ${brl(Math.abs(dCap))} ${dCap<0?"a mais":"a menos"} — a maior redução isolada não venceu no balanço.`;
+    else if(dCap>0) t+=` Custa ${brl(dCap)} a mais que o 2º colocado e entrega ${pct(dRed,1)} de redução adicional.`;
+  }
+  t+= c.progress<100
+    ? ` Ainda faltam ${pct(Math.max(0,c.needPct-c.redPct),1)} de redução para fechar a meta de ${op.anoMeta}.`
+    : ` Sozinho, já cumpre a meta de ${op.anoMeta}.`;
+  return t;
+}
+function renderTechTable(){
+  document.getElementById("techBody").innerHTML=techs.map(t=>{
+    const ef=effortOf(t);
+    const hl=focusSrc&&t.src===focusSrc?" class=\"hl\"":"";
+    return `<tr data-id="${t.id}"${hl}>
+      <td><input type="text" data-f="nome" value="${esc(t.nome)}" aria-label="Nome"></td>
+      <td><select data-f="src" aria-label="Fonte">${SOURCES.map(f=>`<option value="${f.key}" ${f.key===t.src?"selected":""}>${f.label}</option>`).join("")}</select></td>
+      <td class="n"><input type="number" data-f="red" min="0" max="100" step="1" value="${t.red}" aria-label="Redução"></td>
+      <td class="n"><input type="number" data-f="capexM" min="0" step="0.5" value="${t.capex/1e6}" aria-label="CAPEX"></td>
+      <td class="n"><input type="number" data-f="opexM" min="0" step="0.1" value="${t.opex/1e6}" aria-label="OPEX"></td>
+      <td class="n"><input type="number" data-f="anos" min="0" max="20" step="1" value="${t.anos}" aria-label="Anos"></td>
+      <td class="n"><input type="number" data-f="complex" min="0" max="100" step="5" value="${t.complex}" aria-label="Complexidade"></td>
+      <td class="n"><input type="number" data-f="matur" min="0" max="100" step="5" value="${t.matur}" aria-label="Maturidade"></td>
+      <td class="n"><input type="number" data-f="infra" min="0" max="100" step="5" value="${t.infra}" aria-label="Infraestrutura"></td>
+      <td><div class="effort"><span class="track"><i style="width:${ef.toFixed(0)}%"></i></span><em>${nf(ef,0)}</em></div></td>
+      <td><button class="del" data-del="${t.id}" aria-label="Remover">×</button></td>
+    </tr>`;
+  }).join("");
+}
+function renderPicklist(){
+  const list=focusSrc?techs.filter(t=>t.src===focusSrc):techs;
+  document.getElementById("picklist").innerHTML=list.map(t=>`
+    <label class="pick">
+      <input type="checkbox" value="${t.id}" ${selected.has(t.id)?"checked":""}>
+      <span>${esc(shortName(t.nome))}
+        <span class="meta">${t.red}% em ${SOURCES.find(f=>f.key===t.src)?.label||"—"} · ${brl(t.capex)} · esforço ${nf(effortOf(t),0)}</span>
+      </span>
+    </label>`).join("")||`<p class="hint">Nenhuma tecnologia nessa fonte.</p>`;
+}
+function renderWeights(){
+  const defs=[["R","Redução de emissões"],["C","Custo-benefício"],["O","Folga no orçamento"],["F","Facilidade de execução"]];
+  document.getElementById("weights").innerHTML=defs.map(([k,lab])=>`
+    <div class="wrow"><span>${lab}</span>
+      <input type="range" min="0" max="100" step="5" value="${weights[k]}" data-w="${k}" aria-label="Peso: ${lab}">
+      <output>${weights[k]}%</output></div>`).join("");
+  updateWsum();
+}
+function updateWsum(){
+  const tot=weights.R+weights.C+weights.O+weights.F;
+  document.getElementById("wsum").textContent=tot===100
+    ? "Soma 100% — pesos aplicados como estão."
+    : `Soma ${tot}% — os pesos são normalizados para 100% no cálculo.`;
+}
+function renderFooter(){
+  document.getElementById("foot").innerHTML=`
+  <p>As 10 métricas em cadeia: emissões totais → participação por fonte → intensidade por barril → potencial de redução da tecnologia → CO₂e evitado → CAPEX → OPEX → custo por tonelada evitada → índice de esforço → progresso para ${op.anoMeta}.</p>
+  <p>Duas convenções: tecnologias na mesma fonte se compõem sobre o residual (<code>1 − Π(1 − Rᵢ)</code>), para nunca somar reduções acima de 100%; e o custo por tonelada usa <code>(CAPEX + OPEX) / CO₂e evitado</code>, conforme a especificação — é um custo de primeiro ano, não valor presente do ciclo de vida.</p>
+  <div class="sigfoot"><span class="sig">CpB</span><span>CarbonPath 2050 — ferramenta de apoio à decisão. Substitua o banco de tecnologias pelos dados dos seus estudos de engenharia antes de usar qualquer resultado.</span></div>`;
+}
+function render(){
+  renderMetrics(); renderProjChips(); heroChart(); heroRead(); renderSrcChips(); srcChart();
+  renderScenarios(); renderBlocked(); bubbleChart(); renderTechTable(); renderPicklist(); renderFooter();
+  document.getElementById("opId").textContent=(op.tipo==="offshore"?"Offshore":"Onshore")+" · "+nf(op.producao/1e6,1)+" Mbbl/ano";
+  if(!document.getElementById("assistant").hidden) renderAssistant();
+}
+function heroRead(){
+  const em=emissions(), best=projScenario();
+  const prog=best?clamp(best.progress,0,100):0;
+  document.getElementById("heroRead").innerHTML=`
+    <div class="big">${nf(em.total/1000,0)}<small>mil tCO₂e emitidos por ano hoje</small></div>
+    <div class="lede">${best
+      ? `O cenário ${best.rank} evita ${nf(best.avoided/1000,0)} mil tCO₂e por ano e cobre ${pct(prog,0)} do caminho até a meta de ${op.anoMeta}.`
+      : `Nenhuma combinação passa nas restrições atuais. O painel de cenários bloqueados mostra o que falta em cada uma.`}</div>
+    <div class="gapbar ${best?"":"miss"}"><i style="width:${best?prog.toFixed(1):100}%"></i></div>
+    <dl>
+      <dt>Meta de redução</dt><dd>${pct(op.metaRed,0)}</dd>
+      <dt>Intensidade atual</dt><dd>${nf(em.intensKg,1)} kg/bbl</dd>
+      ${best?`<dt>CAPEX do cenário</dt><dd>${brl(best.capex)}</dd>
+      <dt>Custo por tonelada</dt><dd>${isFinite(best.costPerT)?"R$ "+nf(best.costPerT,0):"—"}</dd>
+      <dt>Emissão residual</dt><dd>${nf(best.emAfter/1000,0)} mil t</dd>`:""}
+    </dl>`;
+}
+
+/* ============ 10. FORMULÁRIO ============ */
+const F=id=>document.getElementById(id);
+function fillForm(){
+  F("tipo").value=op.tipo; F("combustivel").value=op.combustivel;
+  F("producao").value=op.producao; F("gas").value=op.gas; F("eletricidade").value=op.eletricidade;
+  F("orcamento").value=op.orcamento;
+  SOURCES.forEach(f=>F("e_"+f.key).value=op.e[f.key]);
+  F("anoIni").value=op.anoIni; F("anoMeta").value=op.anoMeta; F("metaRed").value=op.metaRed;
+  F("redMin").value=op.redMin; F("anoLimite").value=op.anoLimite;
+}
+function readForm(){
+  op.tipo=F("tipo").value; op.combustivel=F("combustivel").value;
+  op.producao=Math.max(0,+F("producao").value||0);
+  op.gas=+F("gas").value||0; op.eletricidade=+F("eletricidade").value||0;
+  op.orcamento=Math.max(0,+F("orcamento").value||0);
+  SOURCES.forEach(f=>op.e[f.key]=Math.max(0,+F("e_"+f.key).value||0));
+  op.anoIni=+F("anoIni").value||2026;
+  op.anoMeta=Math.max(+F("anoMeta").value||2050,op.anoIni+1);
+  op.metaRed=clamp(+F("metaRed").value||0,1,100);
+  op.redMin=clamp(+F("redMin").value||0,0,100);
+  op.anoLimite=+F("anoLimite").value||op.anoMeta;
+}
+
+/* ============ 11. ASSISTENTE ============ */
+let aTab="diag", aAnswer=null;
+let aiMessages=[{role:"assistant",content:"Olá! Sou o assistente do CarbonPath 2050. Posso explicar as métricas e sugerir medidas para reduzir emissões usando os dados atuais do simulador.\n\nPergunte, por exemplo: ‘Qual fonte devo priorizar?’"}];
+let aiBusy=false;
+function aiSnapshot(){
+  const em=emissions();
+  const best=scenarios[0]||null;
+  return {
+    operacao:{tipo:op.tipo,combustivel:op.combustivel,producaoAnual:op.producao,orcamentoCAPEX:op.orcamento,metaReducaoPct:op.metaRed,anoMeta:op.anoMeta,anoLimite:op.anoLimite},
+    emissoes:{totalTCO2eAno:em.total,porFonte:SOURCES.map(f=>({fonte:f.label,tCO2eAno:+op.e[f.key]||0,participacaoPct:em.share[f.key]})),intensidadeTCO2ePorUnidade:em.intens},
+    melhorCenario:best?{nome:best.name,tecnologias:best.list.map(t=>t.nome),reducaoPct:best.redPct,CO2eEvitadoTonsAno:best.avoided,CAPEX:best.capex,OPEXAnual:best.opex,custoPorTCO2e:best.costPerT,esforco:best.effort,anoPronto:best.ready,orcamentoExcedido:best.overBudget}:null,
+    tecnologiasDisponiveis:techs.slice(0,12).map(t=>({nome:t.nome,fonte:SOURCES.find(f=>f.key===t.src)?.label||t.src,reducaoEstimadaPct:t.red,CAPEX:t.capex,OPEXAnual:t.opex,prazoAnos:t.anos})),
+    observacao:"Os dados são estimativas editáveis do protótipo, não medições verificadas de um ativo real."
+  };
+}
+function renderAI(){
+  const body=F("aBody");
+  F("aSub").textContent="Converse sobre os dados atuais do CarbonPath";
+  body.innerHTML=`<div class="ai-chat">
+    <p class="ai-intro">A IA recebe um resumo dos dados do simulador e pode explicar oportunidades de redução. Os cálculos oficiais continuam sendo feitos pelo CarbonPath.</p>
+    <div class="ai-suggestions"><button type="button" data-ai-sug="Qual fonte de emissão devo priorizar e por quê?">Priorizar fontes</button><button type="button" data-ai-sug="Sugira ações para reduzir o flare respeitando meu orçamento.">Reduzir flare</button><button type="button" data-ai-sug="Explique o melhor cenário e suas limitações.">Explicar cenário</button></div>
+    <div class="ai-transcript" id="aiTranscript" aria-live="polite">${aiMessages.map(m=>`<div class="ai-msg ${m.role==="user"?"user":"bot"}"><b>${m.role==="user"?"Você":"Assistente IA"}</b>${esc(m.content)}</div>`).join("")}</div>
+    ${aiBusy?'<div class="ai-status">Analisando os dados…</div>':""}
+    <form class="ai-form" id="aiForm"><textarea id="aiInput" maxlength="1800" placeholder="Ex.: como posso reduzir as emissões com o orçamento atual?" ${aiBusy?"disabled":""}></textarea><button class="btn mini" type="submit" ${aiBusy?"disabled":""}>${aiBusy?"Aguarde…":"Enviar pergunta"}</button></form>
+    <p class="ai-disclaimer">As respostas são geradas por um modelo de linguagem e podem conter erros. Valide fatores de emissão, custos e recomendações com dados de engenharia antes de tomar decisões.</p>
+  </div>`;
+  const transcript=F("aiTranscript"); if(transcript) transcript.scrollTop=transcript.scrollHeight;
+  F("aiForm").addEventListener("submit",e=>{e.preventDefault();const input=F("aiInput");const q=input.value.trim();if(q&&!aiBusy){input.value="";sendAI(q);}});
+  body.querySelectorAll("[data-ai-sug]").forEach(b=>b.addEventListener("click",()=>{if(!aiBusy)sendAI(b.dataset.aiSug);}));
+}
+async function sendAI(question){
+  aiMessages.push({role:"user",content:question});
+  if(aiMessages.length>12)aiMessages=aiMessages.slice(-12);
+  aiBusy=true;renderAssistant();
+  try{
+    const response=await fetch("/api/assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,history:aiMessages.slice(-8,-1),context:aiSnapshot()})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||`Falha ao consultar a IA (HTTP ${response.status}).`);
+    aiMessages.push({role:"assistant",content:String(data.answer||"Não consegui gerar uma resposta. Tente novamente.").slice(0,7000)});
+  }catch(err){
+    aiMessages.push({role:"assistant",content:"Não consegui acessar a IA agora. Verifique se o site foi publicado com a função /api/assistant e se a integração Workers AI está ativada. Detalhe: "+String(err.message||err)});
+  }finally{aiBusy=false;renderAssistant();}
+}
+function diagnostics(){
+  const em=emissions(), out=[], orc=+op.orcamento||0;
+  const cheapest=Math.min(...techs.map(t=>+t.capex||Infinity));
+  if(em.total<=0){
+    out.push({t:"bad",h:"Sem emissões cadastradas",p:"As quatro fontes estão em zero, então não há o que reduzir. Preencha combustão, flare, venting e fugitivas em tCO₂e por ano."});
+    return out;
+  }
+  if(op.producao<=0) out.push({t:"warn",h:"Produção zerada",p:"Sem produção anual não dá para calcular a intensidade em tCO₂e por barril, que é a métrica de comparação entre ativos."});
+  if(orc<cheapest) out.push({t:"bad",h:"Orçamento abaixo da entrada mais barata",
+    p:`A tecnologia de menor CAPEX custa ${brl(cheapest)} e o orçamento é ${brl(orc)}. Nenhuma combinação pode ser montada.`,
+    fix:{label:`Subir orçamento para ${brl(cheapest)}`,act:()=>{F("orcamento").value=Math.ceil(cheapest);run();}}});
+  if(!scenarios.length&&blocked.length){
+    const b=blocked[0], r=b.reasons[0];
+    out.push({t:"bad",h:"Nenhum cenário viável",p:`A combinação mais bem pontuada foi rejeitada: ${r.txt.toLowerCase()}. ${r.fix}`,
+      fix:r.type==="budget"?{label:`Ajustar orçamento para ${brl(b.capex)}`,act:()=>{F("orcamento").value=Math.ceil(b.capex);run();}}
+        :r.type==="red"?{label:`Baixar redução mínima para ${Math.floor(b.redPct)}%`,act:()=>{F("redMin").value=Math.floor(b.redPct);run();}}
+        :{label:`Estender prazo para ${b.ready}`,act:()=>{F("anoLimite").value=b.ready;run();}}});
+  }
+  const best=scenarios[0];
+  if(best){
+    if(best.progress<100){
+      const resto=SOURCES.filter(f=>(+op.e[f.key]||0)>0)
+        .map(f=>({f,rest:(+op.e[f.key]||0)-(best.avoidedBySrc[f.key]||0)}))
+        .sort((a,b)=>b.rest-a.rest)[0];
+      out.push({t:"warn",h:`Falta ${pct(Math.max(0,best.needPct-best.redPct),1)} para a meta`,
+        p:`O melhor cenário cobre ${pct(clamp(best.progress,0,100),0)} do caminho. O que sobra está concentrado em ${resto.f.label.toLowerCase()}, com ${nf(resto.rest,0)} tCO₂e ainda emitidos por ano. Com o orçamento atual essa parcela não é alcançável — ou entra mais capital, ou a meta de ${op.anoMeta} precisa ser revista.`});
+    }else out.push({t:"ok",h:"Meta alcançada no papel",
+      p:`O cenário 1 entrega ${pct(best.redPct,1)} de redução, acima dos ${pct(op.metaRed,0)} exigidos, e sobra ${brl(Math.max(0,orc-best.capex))} de orçamento.`});
+    if(best.capex/(orc||1)<0.35) out.push({t:"warn",h:"Orçamento subutilizado",
+      p:`O vencedor usa só ${pct(best.capex/(orc||1)*100,0)} do capital disponível. O peso de folga orçamentária está em ${weights.O}% e pode estar premiando demais quem gasta pouco.`,
+      fix:{label:"Priorizar redução (60/20/10/10)",act:()=>{weights={R:60,C:20,O:10,F:10};renderWeights();run();}}});
+    if(best.effort>70) out.push({t:"warn",h:"Esforço de execução alto",
+      p:`Esforço médio de ${nf(best.effort,0)}/100. Cenários assim dependem de tecnologia menos madura e infraestrutura nova, o que aumenta o risco de atraso.`});
+    const maiorFonte=SOURCES.reduce((a,b)=>(+op.e[a.key]||0)>(+op.e[b.key]||0)?a:b);
+    if(!best.list.some(t=>t.src===maiorFonte.key)) out.push({t:"warn",h:`${maiorFonte.label} ficou de fora`,
+      p:`Essa fonte responde por ${pct(em.share[maiorFonte.key],0)} das emissões e nenhuma tecnologia do cenário vencedor atua nela. Clique na barra dessa fonte no gráfico para ver as opções disponíveis.`});
+  }
+  if(weights.R+weights.C+weights.O+weights.F!==100) out.push({t:"warn",h:"Pesos não somam 100%",
+    p:`Somam ${weights.R+weights.C+weights.O+weights.F}%. O cálculo normaliza automaticamente, então o ranking continua válido — mas fica mais fácil de interpretar em 100.`});
+  if(!out.length) out.push({t:"ok",h:"Nada travando",p:"Os dados estão consistentes e há cenários viáveis. Experimente mover os pesos do score para ver como a recomendação muda."});
+  return out;
+}
+const METRIC_DEFS=()=>{
+  const em=emissions(), best=projScenario();
+  const maior=SOURCES.reduce((a,b)=>(+op.e[a.key]||0)>(+op.e[b.key]||0)?a:b);
+  return [
+    {n:"1. Emissões totais",v:nf(em.total,0)+" t",f:"E_comb + E_flare + E_vent + E_fug",d:"Soma das quatro fontes. É o denominador de quase tudo que vem depois."},
+    {n:"2. Emissões por fonte",v:maior.label+" "+pct(em.share[maior.key],0),f:"E_fonte ÷ E_total",d:"Mostra onde está a oportunidade. Atacar uma fonte de 4% raramente compensa, por mais barata que seja a tecnologia."},
+    {n:"3. Intensidade",v:nf(em.intensKg,1)+" kg/bbl",f:"E_total ÷ produção",d:"Permite comparar ativos de tamanhos diferentes. Um campo grande pode emitir mais no total e ainda ser mais eficiente."},
+    {n:"4. Potencial de redução",v:"por tecnologia",f:"R (% da fonte)",d:"Quanto a tecnologia elimina da fonte em que atua. Vem do banco de tecnologias, que você edita."},
+    {n:"5. CO₂e evitado",v:best?nf(best.avoided,0)+" t/ano":"—",f:"E_fonte × R",d:"A redução real em toneladas. Duas tecnologias na mesma fonte se compõem sobre o que restou, nunca somam além de 100%."},
+    {n:"6. CAPEX",v:best?brl(best.capex):"—",f:"soma dos investimentos",d:"Investimento inicial. É o que o orçamento limita."},
+    {n:"7. OPEX",v:best?brl(best.opex):"—",f:"soma dos custos anuais",d:"Custo de operar depois de instalado. Não consome o orçamento de CAPEX, mas entra no custo por tonelada."},
+    {n:"8. Custo por tonelada",v:best&&isFinite(best.costPerT)?"R$ "+nf(best.costPerT,0):"—",f:"(CAPEX + OPEX) ÷ CO₂e evitado",d:"A régua de custo-benefício. Quanto menor, mais barata é cada tonelada eliminada."},
+    {n:"9. Índice de esforço",v:best?nf(best.effort,0)+"/100":"—",f:"custo 25% + complexidade 25% + maturidade 20% + tempo 15% + infra 15%",d:"Viabilidade prática. Um projeto barato e eficaz que exige infraestrutura inexistente ainda é difícil de executar."},
+    {n:"10. Progresso para "+op.anoMeta,v:best?pct(clamp(best.progress,0,100),0):"—",f:"(R_cenário ÷ R_necessária) × 100",d:"Quanto do caminho até a meta o cenário cobre. 100% significa meta fechada só com essas tecnologias."}
+  ];
+};
+const QUESTIONS=[
+  {q:"Por que o cenário que reduz mais não venceu?",a:()=>{
+    const best=scenarios[0];
+    if(!best)return "Ainda não há cenário viável — veja a aba Diagnóstico.";
+    const maisRed=scenarios.slice().sort((a,b)=>b.redPct-a.redPct)[0];
+    if(maisRed.key===best.key)return `Neste caso venceu mesmo: o cenário 1 é também o de maior redução (${pct(best.redPct,1)}). Acontece quando o peso de redução (${weights.R}%) domina os demais.`;
+    return `O que mais reduz é o ${maisRed.rank}º (${pct(maisRed.redPct,1)}), mas custa ${brl(maisRed.capex)} contra ${brl(best.capex)} do vencedor, com esforço ${nf(maisRed.effort,0)} contra ${nf(best.effort,0)}. Com os pesos atuais — redução ${weights.R}%, custo-benefício ${weights.C}%, folga ${weights.O}%, facilidade ${weights.F}% — o ganho extra não compensa. Suba o peso de redução e ele assume a liderança.`;}},
+  {q:"Como uso o gráfico de trajetória?",a:()=>`Passe o cursor sobre a área do gráfico: aparece o ano, a emissão projetada, o que seria emitido sem ação, quanto foi evitado naquele ano e o que ainda falta para a meta. Os botões acima trocam o cenário projetado — clicar num cenário na lista também muda a curva. A escala alterna entre toneladas por ano, percentual em relação a hoje e total acumulado de CO₂e evitado no período, que é a leitura mais próxima do efeito climático real.`},
+  {q:"Como leio o gráfico de bolhas?",a:()=>`Cada bolha é um cenário e o número dentro dela é a posição no ranking. O tamanho é o esforço de implantação. Vermelhas tracejadas são bloqueadas. Passe o cursor para ver todas as métricas e clique para pular direto ao cenário na lista. Você pode trocar o eixo horizontal entre custo por tonelada, CAPEX total e esforço — no modo CAPEX aparece a linha vermelha do orçamento, que separa o que cabe do que não cabe.`},
+  {q:"O que muda se eu mexer nos pesos?",a:()=>`Os pesos decidem o que a plataforma chama de \u201cmelhor\u201d. Redução em ${weights.R}% favorece quem elimina mais toneladas; custo-benefício em ${weights.C}% favorece quem gasta menos por tonelada; folga em ${weights.O}% premia quem sobra orçamento; facilidade em ${weights.F}% premia quem é simples de executar. As quatro notas são normalizadas de 0 a 100 antes da soma. Mova um slider e o ranking recalcula na hora.`},
+  {q:"Por que só aparecem poucos cenários?",a:()=>`O motor testa todas as combinações do banco (${techs.length} tecnologias hoje) e mantém as que passam nas três restrições: orçamento de ${brl(op.orcamento)}, redução mínima de ${pct(op.redMin,0)} e conclusão até ${op.anoLimite}. Mostra as 5 melhores, evitando listar variações quase idênticas. As rejeitadas com melhor pontuação aparecem no painel de bloqueados, com o motivo exato.`},
+  {q:"Por que duas tecnologias na mesma fonte não somam?",a:()=>`Porque a segunda só atua sobre o que a primeira deixou. Se uma VRU elimina 90% do venting, sobram 10% — e uma medida de 70% remove 70% desses 10%, não 70% do total. O combinado é 1 − (0,10 × 0,30) = 97%. Somar daria 160%, impossível.`},
+  {q:"Posso confiar nos valores das tecnologias?",a:()=>`Não sem revisar. Os números carregados são ordens de grandeza plausíveis para servir de ponto de partida, não dados de um ativo real. Toda a tabela é editável: redução, CAPEX, OPEX, anos e os três fatores de esforço. Substitua pelos valores dos seus estudos antes de usar qualquer resultado para decisão.`},
+  {q:"O custo por tonelada considera os 25 anos?",a:()=>`Não. A fórmula da especificação é (CAPEX + OPEX) ÷ CO₂e evitado, com o OPEX de um único ano. É um custo de primeiro ano, útil para ranquear, mas penaliza projetos de CAPEX alto e OPEX baixo frente a uma análise de ciclo de vida. Para decisão de investimento, compare com o valor presente calculado à parte.`}
+];
+function renderAssistant(){
+  const body=document.getElementById("aBody");
+  document.querySelectorAll(".atabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===aTab)));
+  if(aTab==="diag"){
+    const d=diagnostics();
+    F("aSub").textContent="Lê os seus números e explica o que fazer";
+    body.innerHTML=d.map((n,i)=>`<div class="note ${n.t}"><h3>${esc(n.h)}</h3><p>${n.p}</p>${n.fix?`<div class="do"><button class="btn mini" data-fix="${i}">${esc(n.fix.label)}</button></div>`:""}</div>`).join("");
+    body.querySelectorAll("[data-fix]").forEach(b=>b.addEventListener("click",()=>d[+b.dataset.fix].fix.act()));
+  }
+  if(aTab==="metr"){
+    F("aSub").textContent="As 10 métricas com os seus valores atuais";
+    body.innerHTML=`<div class="note">`+METRIC_DEFS().map(m=>
+      `<div class="metricdef"><h3>${esc(m.n)}<span>${esc(m.v)}</span></h3><div class="f">${esc(m.f)}</div><p>${esc(m.d)}</p></div>`).join("")+`</div>`;
+  }
+  if(aTab==="perg"){
+    F("aSub").textContent="Respostas usando os números da sua tela";
+    body.innerHTML=`<div class="qlist">${QUESTIONS.map((q,i)=>`<button class="q" data-q="${i}">${esc(q.q)}</button>`).join("")}</div>`
+      +(aAnswer!==null?`<div class="answer">${QUESTIONS[aAnswer].a()}</div>`:"");
+    body.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{aAnswer=+b.dataset.q;renderAssistant();body.scrollTop=body.scrollHeight;}));
+  }
+  if(aTab==="ia") renderAI();
+}
+function openAssistant(tab){ aTab=tab||aTab; F("assistant").hidden=false; F("openAssist2").hidden=true; renderAssistant(); }
+F("openAssist").addEventListener("click",()=>openAssistant("diag"));
+F("openAssist2").addEventListener("click",()=>openAssistant("diag"));
+F("closeAssist").addEventListener("click",()=>{F("assistant").hidden=true;F("openAssist2").hidden=false;});
+document.querySelector(".atabs").addEventListener("click",e=>{
+  const t=e.target.dataset.tab; if(!t)return; aTab=t; aAnswer=null; renderAssistant();
+});
+
+/* ============ 12. PASSO A PASSO ============ */
+const TOUR=[
+  {el:"secOp",h:"Comece pela operação",p:"Informe produção, consumos e o quanto cada fonte emite por ano, em tCO₂e. Esses quatro números são a base de tudo: definem onde está o problema e quanto cada tecnologia consegue eliminar."},
+  {el:"secMetrics",h:"Explore o gráfico de fontes",p:"Passe o cursor sobre cada barra para ver quanto ela emite, quanto o cenário evita e quais tecnologias atuam ali. Clicar filtra a tabela e a lista de seleção para aquela fonte, o que ajuda a montar cenários dirigidos ao maior problema."},
+  {el:"secMode",h:"Escolha entre simular e otimizar",p:"Em Simulação você marca as tecnologias e vê o resultado. Em Otimização você define orçamento, redução mínima e prazo, e o motor testa todas as combinações possíveis."},
+  {el:"secWeights",h:"Defina o que é \u201cmelhor\u201d",p:"Os quatro pesos decidem o ranking. Capital curto pede folga orçamentária alta; pressão regulatória pede redução alta. Mova os sliders e o ranking recalcula imediatamente."},
+  {el:"secScen",h:"Compare os cenários",p:"Cinco combinações ranqueadas, com todas as métricas. Clique em qualquer uma para projetá-la no gráfico de trajetória lá em cima. A primeira traz a justificativa de por que venceu, incluindo o que perde para a segunda."},
+  {el:"secBlocked",h:"Veja o que ficou de fora e por quê",p:"Combinações com boa pontuação que foram rejeitadas aparecem com o motivo exato: quanto de orçamento faltou, quantos pontos percentuais de redução ficaram abaixo do mínimo, quantos anos passaram do prazo."},
+  {el:"secBubble",h:"Cruze redução, custo e esforço",p:"Cada bolha é um cenário; o tamanho é o esforço. Troque o eixo horizontal entre custo por tonelada, CAPEX e esforço. No modo CAPEX aparece a linha do orçamento. Clique numa bolha para pular ao cenário correspondente."},
+  {el:"secTech",h:"Ajuste o banco de tecnologias",p:"Nada aqui é fixo. Redução, CAPEX, OPEX, prazo e fatores de esforço são editáveis, e o índice de esforço recalcula sozinho. Troque pelos valores dos seus estudos antes de decidir qualquer coisa."}
+];
+let tourAt=-1;
+function tourShow(i){
+  document.querySelectorAll(".spotlight").forEach(e=>e.classList.remove("spotlight"));
+  if(i<0||i>=TOUR.length){tourEnd();return;}
+  tourAt=i;
+  const s=TOUR[i], el=F(s.el);
+  F("tourMask").hidden=false; F("tourCard").hidden=false;
+  el.classList.add("spotlight");
+  el.scrollIntoView({block:"center",behavior:"smooth"});
+  F("tourTitle").textContent=s.h; F("tourText").textContent=s.p;
+  F("tourStep").textContent=`${i+1} de ${TOUR.length}`;
+  F("tourNext").textContent=i===TOUR.length-1?"Concluir":"Próximo";
+}
+function tourEnd(){
+  document.querySelectorAll(".spotlight").forEach(e=>e.classList.remove("spotlight"));
+  F("tourMask").hidden=true; F("tourCard").hidden=true; tourAt=-1;
+}
+F("tourBtn").addEventListener("click",()=>tourShow(0));
+F("tourNext").addEventListener("click",()=>tourShow(tourAt+1));
+F("tourSkip").addEventListener("click",tourEnd);
+F("tourMask").addEventListener("click",tourEnd);
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  if(tourAt>=0)tourEnd();
+  else if(!F("assistant").hidden){F("assistant").hidden=true;F("openAssist2").hidden=false;}
+});
+
+/* ============ 13. EVENTOS ============ */
+document.querySelector(".rail").addEventListener("input",e=>{
+  if(e.target.matches("input,select")&&!e.target.dataset.w){
+    readForm(); renderMetrics(); heroChart(); heroRead(); srcChart();
+  }
+});
+document.getElementById("weights").addEventListener("input",e=>{
+  const k=e.target.dataset.w; if(!k)return;
+  weights[k]=+e.target.value; e.target.nextElementSibling.textContent=weights[k]+"%";
+  updateWsum(); run();
+});
+document.getElementById("picklist").addEventListener("change",e=>{
+  if(e.target.type!=="checkbox")return;
+  const id=+e.target.value;
+  e.target.checked?selected.add(id):selected.delete(id);
+  run();
+});
+document.getElementById("projChips").addEventListener("click",e=>{
+  const i=e.target.dataset.proj; if(i===undefined)return;
+  projIdx=+i; renderProjChips(); heroChart(); heroRead(); srcChart(); renderMetrics();
+});
+document.getElementById("viewChips").addEventListener("click",e=>{
+  const v=e.target.dataset.view; if(!v)return;
+  heroView=v;
+  document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.view===v)));
+  heroChart();
+});
+document.getElementById("srcChips").addEventListener("click",e=>{
+  if(e.target.dataset.fsrc===undefined)return;
+  setFocusSrc(e.target.dataset.fsrc||null);
+});
+document.getElementById("bubXChips").addEventListener("click",e=>{
+  const v=e.target.dataset.x; if(!v)return;
+  bubX=v;
+  document.querySelectorAll("#bubXChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.x===v)));
+  bubbleChart();
+});
+document.getElementById("bubBlocked").addEventListener("click",e=>{
+  showBlockedBubbles=!showBlockedBubbles;
+  e.currentTarget.setAttribute("aria-pressed",String(showBlockedBubbles));
+  bubbleChart();
+});
+document.getElementById("techBody").addEventListener("input",e=>{
+  const tr=e.target.closest("tr"); if(!tr)return;
+  const t=techs.find(x=>x.id===+tr.dataset.id); if(!t)return;
+  const f=e.target.dataset.f;
+  if(f==="nome")t.nome=e.target.value;
+  else if(f==="src")t.src=e.target.value;
+  else if(f==="capexM")t.capex=Math.max(0,(+e.target.value||0)*1e6);
+  else if(f==="opexM")t.opex=Math.max(0,(+e.target.value||0)*1e6);
+  else if(f==="red")t.red=clamp(+e.target.value||0,0,100);
+  else t[f]=Math.max(0,+e.target.value||0);
+  const ef=effortOf(t);
+  tr.querySelector(".track i").style.width=ef.toFixed(0)+"%";
+  tr.querySelector(".effort em").textContent=nf(ef,0);
+});
+document.getElementById("techBody").addEventListener("change",e=>{ if(e.target.dataset.f==="src") run(); });
+document.getElementById("techBody").addEventListener("click",e=>{
+  const id=e.target.dataset.del; if(!id)return;
+  techs=techs.filter(t=>t.id!==+id); selected.delete(+id); run();
+});
+document.getElementById("addTech").addEventListener("click",()=>{
+  techs.push({id:nextId++,nome:"Nova tecnologia",src:"comb",red:10,capex:10000000,opex:500000,anos:2,complex:40,matur:30,infra:40});
+  renderTechTable(); renderPicklist();
+});
+document.getElementById("toggleBlocked").addEventListener("click",()=>{showAllBlocked=!showAllBlocked;renderBlocked();});
+function setMode(m){
+  mode=m;
+  F("modeSim").setAttribute("aria-pressed",String(m==="sim"));
+  F("modeOpt").setAttribute("aria-pressed",String(m==="opt"));
+  F("simPane").hidden=m!=="sim"; F("optPane").hidden=m!=="opt";
+  run();
+}
+F("modeSim").addEventListener("click",()=>setMode("sim"));
+F("modeOpt").addEventListener("click",()=>setMode("opt"));
+F("runBtn").addEventListener("click",run);
+F("resetBtn").addEventListener("click",()=>{
+  op=structuredClone(DEFAULT_OP); techs=structuredClone(DEFAULT_TECHS);
+  weights={...DEFAULT_W}; selected=new Set([1,2,3]);
+  showAllBlocked=false; focusSrc=null; projIdx=0; heroView="abs"; bubX="cost";
+  fillForm(); renderWeights();
+  document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.view==="abs")));
+  document.querySelectorAll("#bubXChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.x==="cost")));
+  run();
+});
+addEventListener("resize",()=>{heroChart();srcChart();bubbleChart();});
+
+/* ============ 14. BOOT ============ */
+fillForm(); renderWeights(); run();
+</script>
+</body>
+</html>
